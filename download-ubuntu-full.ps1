@@ -20,7 +20,7 @@ foreach ($ubuntu_version in $ubuntu_versions)
     if ($statuscode -eq "OK") 
     {
         Write-Host " "
-		Write-Host -ForegroundColor green "URL for $ubuntu_version exists"
+	Write-Host -ForegroundColor green "URL for $ubuntu_version exists"
         Write-Host " "
         
         Invoke-WebRequest -uri $ubuntu_archive -OutFile .\$md5_file_name
@@ -36,13 +36,13 @@ foreach ($ubuntu_version in $ubuntu_versions)
 
             if ($file_already_downloaded -eq "True") 
             {
-                Write-host "$file_Name is already downloaded. Checking hash."
+                Write-Host "$file_Name is already downloaded. Checking hash."
 
                 $current_file_hash = Get-FileHash ".\$file_name" -Algorithm MD5
 
                 if (Compare-Object -ReferenceObject $hash -DifferenceObject $current_file_hash.hash)
                 {
-                    write-host -ForegroundColor red "Hash is different. Downloading current version."
+                    Write-Host -ForegroundColor red "Hash is different. Downloading current version."
                     Invoke-WebRequest -Uri http://releases.ubuntu.com/$ubuntu_version/$file_Name -OutFile .\$file_Name
                 }
                 else 
@@ -52,15 +52,15 @@ foreach ($ubuntu_version in $ubuntu_versions)
             }
             else 
             { 
-                Write-host -ForegroundColor yellow "$file_name downloading for the first time"
-				Invoke-WebRequest -Uri http://releases.ubuntu.com/$ubuntu_version/$file_Name -OutFile .\$file_Name
+                Write-Host -ForegroundColor yellow "$file_name downloading for the first time"
+		Invoke-WebRequest -Uri http://releases.ubuntu.com/$ubuntu_version/$file_Name -OutFile .\$file_Name
             }
         }
     }
     else 
     { 
-        Write-host " "
-		Write-host -ForegroundColor red "URL for Ubuntu $ubuntu_version doesn't exist"
-		Write-Host " "
+        Write-Host " "
+	Write-Host -ForegroundColor red "URL for Ubuntu $ubuntu_version doesn't exist"
+	Write-Host " "
     }
 }
