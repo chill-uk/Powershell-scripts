@@ -8,14 +8,13 @@ foreach ($ubuntu_version in $ubuntu_versions)
     $ubuntu_archive = "http://releases.ubuntu.com/$ubuntu_version/MD5SUMS"
     $md5_file_name = $ubuntu_version + ".MD5SUMS"
 
-    $statuscode = "schrodeingerstatus"
-
     try 
     {
-        $statuscode = (invoke-webrequest -uri $ubuntu_archive -UseBasicParsing -TimeoutSec 5 -DisableKeepAlive -method Head).statusdescription
+    $statuscode = (invoke-webrequest -uri $ubuntu_archive -UseBasicParsing -TimeoutSec 5 -DisableKeepAlive -method Head).statusdescription
     }
     Catch 
     {
+    $statuscode = "FAIL"
     }
 
     if ($statuscode -eq "OK") 
@@ -56,7 +55,7 @@ foreach ($ubuntu_version in $ubuntu_versions)
                 Write-host -ForegroundColor yellow "$file_name downloading for the first time"
 				Invoke-WebRequest -Uri http://releases.ubuntu.com/$ubuntu_version/$file_Name -OutFile .\$file_Name
             }
-         }
+        }
     }
     else 
     { 
