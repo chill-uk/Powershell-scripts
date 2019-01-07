@@ -26,7 +26,7 @@ foreach ($distro in $distros)
         if ($statuscode -eq "OK") 
         {
             Write-Host -ForegroundColor Green "Downloading Ubuntu-mini-$ubuntu_version-$architecture.iso to $env:USERPROFILE\Downloads\"
-            #Invoke-WebRequest $ubuntu_archive -OutFile $ubuntu_file
+            Invoke-WebRequest $ubuntu_archive -OutFile $ubuntu_file
             
         }
         else 
