@@ -20,7 +20,7 @@ foreach ($ubuntu_version in $ubuntu_versions)
     if ($statuscode -eq "OK") 
     {
         Write-Host " "
-	Write-Host -ForegroundColor green "URL for $ubuntu_version exists"
+        Write-Host -ForegroundColor green "URL for $ubuntu_version exists"
         Write-Host " "
         
         Invoke-WebRequest -uri $ubuntu_archive -OutFile .\$md5_file_name
@@ -53,14 +53,14 @@ foreach ($ubuntu_version in $ubuntu_versions)
             else 
             { 
                 Write-Host -ForegroundColor yellow "$file_name downloading for the first time"
-		Invoke-WebRequest -Uri http://releases.ubuntu.com/$ubuntu_version/$file_Name -OutFile .\$file_Name
+                Invoke-WebRequest -Uri http://releases.ubuntu.com/$ubuntu_version/$file_Name -OutFile .\$file_Name
             }
         }
     }
     else 
     { 
         Write-Host " "
-	Write-Host -ForegroundColor red "URL for Ubuntu $ubuntu_version doesn't exist"
-	Write-Host " "
+    	Write-Host -ForegroundColor red "URL for Ubuntu $ubuntu_version doesn't exist"
+    	Write-Host " "
     }
 }
