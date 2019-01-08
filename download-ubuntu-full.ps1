@@ -2,6 +2,7 @@
 # Written by Christopher Hill 2019/07/01
 
 $ubuntu_versions = @("18.04.1","18.10","19.04")
+$progressPreference = 'silentlyContinue'
 
 foreach ($ubuntu_version in $ubuntu_versions) 
 {
@@ -14,7 +15,7 @@ foreach ($ubuntu_version in $ubuntu_versions)
     }
     Catch 
     {
-    $statuscode = "FAIL"
+    $statuscode = "URL DOES NOT EXIST"
     }
 
     if ($statuscode -eq "OK") 
@@ -36,24 +37,37 @@ foreach ($ubuntu_version in $ubuntu_versions)
 
             if ($file_already_downloaded -eq "True") 
             {
-                Write-Host "$file_Name is already downloaded. Checking hash."
-
-                $current_file_hash = Get-FileHash ".\$file_name" -Algorithm MD5
-
-                if (Compare-Object -ReferenceObject $hash -DifferenceObject $current_file_hash.hash)
+                Write-Host "$file_Name is already downloaded. Checking for hash."
+				$ErrorActionPreference = "silentlyContinue"
+				$current_file_hash = Get-Content ".\$file_name" -Stream FileHash
+				$ErrorActionPreference = "Continue"
+                if ($null -eq $current_file_hash)
                 {
-                    Write-Host -ForegroundColor red "Hash is different. Downloading current version."
-                    Invoke-WebRequest -Uri http://releases.ubuntu.com/$ubuntu_version/$file_Name -OutFile .\$file_Name
+                    Write-Host -ForegroundColor yellow "Hash not found, generating new one"
+                    $current_file_hash = Get-FileHash .\$file_Name -Algorithm MD5
+                    Add-Content -path .\$file_Name -Value $current_file_hash.hash -Stream FileHash
+					$current_file_hash = $current_file_hash.hash
+                }
+                
+                if ($hash -eq $current_file_hash)
+                {
+                    Write-Host -ForegroundColor green "Hash is found and correct. You already have the latest version."
                 }
                 else 
                 {
-                    Write-Host -ForegroundColor green "Hash is correct. You already have the latest version."
+                    Write-Host -ForegroundColor red "Hash is different, downloading new version"
+                    Invoke-WebRequest -Uri http://releases.ubuntu.com/$ubuntu_version/$file_Name -OutFile .\$file_Name
+                    Write-Host "Generating hash for $file_name"
+                    $current_file_hash = Get-FileHash .\$file_Name -Algorithm MD5
+                    Add-Content -path .\$file_Name -Value $current_file_hash.hash -Stream FileHash                    
                 }
             }
             else 
             { 
                 Write-Host -ForegroundColor yellow "$file_name downloading for the first time"
                 Invoke-WebRequest -Uri http://releases.ubuntu.com/$ubuntu_version/$file_Name -OutFile .\$file_Name
+                $current_file_hash = Get-FileHash .\$file_Name -Algorithm MD5
+                Add-Content -path .\$file_Name -Value $current_file_hash.hash -Stream FileHash
             }
         }
     }
