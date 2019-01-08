@@ -1,4 +1,5 @@
 # Checks and downloads your Ubuntu isos (full versions).
+# attaches file hash to each file via alternative data streams
 # Written by Christopher Hill 2019/07/01
 
 $ubuntu_versions = @("18.04.1","18.10","19.04")
