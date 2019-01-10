@@ -8,26 +8,30 @@ $progressPreference = 'silentlyContinue'
 
 function generate_hash 
 {
-	Write-Host -ForegroundColor yellow "Generating hash"
-	$file_successfully_downloaded = Test-Path ".\$file_name"
-	if ($file_successfully_downloaded -eq "True")
-	{
-		$current_file_hash = Get-FileHash .\$file_Name -Algorithm MD5
-		$current_file_hash = $current_file_hash.hash
-		Add-Content -path .\$file_Name -Value $current_file_hash -Stream FileHash
-		return $current_file_hash
-	}
-	else
-	{
-		Write-Host "Problem saving $file_Name"
-		Write-Host "$file_Name not found"
-	}
+    $file_downloaded = Test-Path ".\$file_name"
+    if ($file_downloaded -eq "True")
+    {
+        Write-Host -ForegroundColor yellow "Generating hash"
+        $current_file_hash = Get-FileHash .\$file_Name -Algorithm MD5
+    	$current_file_hash = $current_file_hash.hash
+    	Add-Content -path .\$file_Name -Value $current_file_hash -Stream FileHash
+    }
+    else
+    {
+        Write-Host -ForegroundColor red "$file_Name not found"        
+    }
+    return $current_file_hash
 }
 
 function download_iso
 {
 	Write-Host "Downloading $ubuntu_url$file_Name" 
-	Invoke-WebRequest -Uri $ubuntu_url$file_Name -OutFile .\$file_Name
+    Invoke-WebRequest -Uri $ubuntu_url$file_Name -OutFile .\$file_Name
+    $file_downloaded = Test-Path ".\$file_name"
+    if ($file_downloaded -ne "True")
+    {
+        Write-Host -ForegroundColor red "Problem saving $file_Name"
+    }
 }
 
 foreach ($ubuntu_version in $ubuntu_versions) 
@@ -60,9 +64,9 @@ foreach ($ubuntu_version in $ubuntu_versions)
 			$hash = $Data[0]
 			$file_name = $Data[1].Trim("*")
 
-			$file_already_downloaded = Test-Path ".\$file_name"
+			$file_downloaded = Test-Path ".\$file_name"
 	
-			if ($file_already_downloaded -eq "True") 
+			if ($file_downloaded -eq "True") 
 			{
 				Write-Host "$file_Name is already downloaded."
 				Write-Host -ForegroundColor yellow "Checking for hash."
@@ -78,14 +82,14 @@ foreach ($ubuntu_version in $ubuntu_versions)
 				{
 					Write-Host -ForegroundColor red "Hash is different, downloading new version"
 					download_iso
-					$current_file_hash = generate_hash
+                    $current_file_hash = generate_hash
 				}
 			}
 			else 
 			{
 				Write-Host -ForegroundColor yellow "$file_name downloading for the first time"
-				download_iso
-				$current_file_hash = generate_hash
+                download_iso
+                $current_file_hash = generate_hash
 			}
 		
 			if ($hash -ne $current_file_hash)
