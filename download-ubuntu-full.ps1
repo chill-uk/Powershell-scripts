@@ -4,28 +4,35 @@
 
 $ubuntu_versions = @("18.04.1","18.10","19.04")
 $progressPreference = 'silentlyContinue'
-$ubuntu_url = "http://releases.ubuntu.com/$ubuntu_version/"
+
 
 function generate_hash 
 {
-    Write-Host -ForegroundColor yellow "Generating hash"
-    $current_file_hash = Get-FileHash .\$file_Name -Algorithm MD5
-    $current_file_hash = $current_file_hash.hash
-    Add-Content -path .\$file_Name -Value $current_file_hash -Stream FileHash
-    return $current_file_hash
+	Write-Host -ForegroundColor yellow "Generating hash"
+	$file_successfully_downloaded = Test-Path ".\$file_name"
+	if ($file_successfully_downloaded -eq "True")
+	{
+		$current_file_hash = Get-FileHash .\$file_Name -Algorithm MD5
+		$current_file_hash = $current_file_hash.hash
+		Add-Content -path .\$file_Name -Value $current_file_hash -Stream FileHash
+		return $current_file_hash
+	}
+	else
+	{
+		Write-Host "Problem saving $file_Name"
+		Write-Host "$file_Name not found"
+	}
 }
 
 function download_iso
 {
-<<<<<<< HEAD
-	# Invoke-WebRequest -Uri $ubuntu_url + $file_Name -OutFile .\$file_Name
-=======
-    Invoke-WebRequest -Uri http://releases.ubuntu.com/$ubuntu_version/$file_Name -OutFile .\$file_Name
->>>>>>> 219256473d6c20b7c76ceb02abaed0c0dcda40af
+	Write-Host "Downloading $ubuntu_url$file_Name" 
+	Invoke-WebRequest -Uri $ubuntu_url$file_Name -OutFile .\$file_Name
 }
 
 foreach ($ubuntu_version in $ubuntu_versions) 
 {
+	$ubuntu_url = "http://releases.ubuntu.com/$ubuntu_version/"
     $ubuntu_archive = $ubuntu_url + "MD5SUMS"
     $md5_file_name = $ubuntu_versions + ".MD5SUMS"
 
@@ -57,36 +64,39 @@ foreach ($ubuntu_version in $ubuntu_versions)
 
             if ($file_already_downloaded -eq "True") 
             {
-                Write-Host "$file_Name is already downloaded. Checking for hash."
-		$ErrorActionPreference = "silentlyContinue"
-		$current_file_hash = Get-Content ".\$file_name" -Stream FileHash
-		$ErrorActionPreference = "Continue"
+                Write-Host "$file_Name is already downloaded."
+				Write-Host "Checking for hash."
+				$ErrorActionPreference = "silentlyContinue"
+				$current_file_hash = Get-Content ".\$file_name" -Stream FileHash
+				$ErrorActionPreference = "Continue"
                 if ($null -eq $current_file_hash)
                 {
                     Write-Host -ForegroundColor yellow "Hash not found."
-                    $current_file_hash = generate_hash                    
+                	$current_file_hash = generate_hash
                 }
-                if ($hash -eq $current_file_hash)
-                {
-                    Write-Host -ForegroundColor green "Hash is found and correct. You already have the latest version."
-                }
-                else 
+                if ($hash -ne $current_file_hash)
                 {
                     Write-Host -ForegroundColor red "Hash is different, downloading new version"
                     download_iso
-                    $current_file_hash = generate_hash
+					$current_file_hash = generate_hash
                 }
             }
             else 
             { 
                 Write-Host -ForegroundColor yellow "$file_name downloading for the first time"
                 download_iso
-                $current_file_hash = generate_hash
-            }
+				$current_file_hash = generate_hash
+			}
             if ($hash -ne $current_file_hash)
             {
-                Write-Host "$file_name verification failed. Either your iso is corrupt, or Ubuntu's MD5 hashes are out of date"
+                Write-Host -ForegroundColor red "$file_name verification failed." 
+				Write-Host -ForegroundColor red "Either your iso is corrupt, or Ubuntu's MD5 hashes are out of date"
             }
+			else
+			{
+				Write-Host -ForegroundColor green "Verification successfull. You now have the latest version"
+				Write-Host ""
+			}
         }
     }
     else 
