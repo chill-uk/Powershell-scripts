@@ -40,7 +40,7 @@ foreach ($ubuntu_version in $ubuntu_versions)
     {
     $statuscode = (invoke-webrequest -uri $ubuntu_archive -UseBasicParsing -TimeoutSec 5 -DisableKeepAlive -method Head).statusdescription
     }
-    Catch 
+    catch 
     {
     $statuscode = "URL DOES NOT EXIST"
     }
@@ -65,10 +65,10 @@ foreach ($ubuntu_version in $ubuntu_versions)
             if ($file_already_downloaded -eq "True") 
             {
                 Write-Host "$file_Name is already downloaded."
-				Write-Host -ForegroundColor yellow "Checking for hash."
-				$ErrorActionPreference = "silentlyContinue"
-				$current_file_hash = Get-Content ".\$file_name" -Stream FileHash
-				$ErrorActionPreference = "Continue"
+		    	Write-Host -ForegroundColor yellow "Checking for hash."
+		    	$ErrorActionPreference = "silentlyContinue"
+		    	$current_file_hash = Get-Content ".\$file_name" -Stream FileHash
+		    	$ErrorActionPreference = "Continue"
                 if ($null -eq $current_file_hash)
                 {
                     Write-Host -ForegroundColor yellow "Hash not found."
@@ -78,25 +78,25 @@ foreach ($ubuntu_version in $ubuntu_versions)
                 {
                     Write-Host -ForegroundColor red "Hash is different, downloading new version"
                     download_iso
-					$current_file_hash = generate_hash
+		    		$current_file_hash = generate_hash
                 }
             }
             else 
             { 
                 Write-Host -ForegroundColor yellow "$file_name downloading for the first time"
                 download_iso
-				$current_file_hash = generate_hash
-			}
+		    	$current_file_hash = generate_hash
+		    }
             if ($hash -ne $current_file_hash)
             {
                 Write-Host -ForegroundColor red "$file_name verification failed." 
-				Write-Host -ForegroundColor red "Either your iso is corrupt, or Ubuntu's MD5 hashes are out of date"
+		    	Write-Host -ForegroundColor red "Either your iso is corrupt, or Ubuntu's MD5 hashes are out of date"
             }
-			else
-			{
-				Write-Host -ForegroundColor green "Verification successfull. You have the latest version"
-				Write-Host ""
-			}
+		    else
+		    {
+		    	Write-Host -ForegroundColor green "Verification successfull. You have the latest version"
+		    	Write-Host ""
+		    }
         }
     }
     else 
