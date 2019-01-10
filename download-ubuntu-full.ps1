@@ -4,7 +4,7 @@
 
 $ubuntu_versions = @("18.04.1","18.10","19.04")
 $progressPreference = 'silentlyContinue'
-
+$ubuntu_url = "http://releases.ubuntu.com/$ubuntu_version/"
 
 function generate_hash 
 {
@@ -17,13 +17,13 @@ function generate_hash
 
 function download_iso
 {
-	Invoke-WebRequest -Uri http://releases.ubuntu.com/$ubuntu_version/$file_Name -OutFile .\$file_Name
+	# Invoke-WebRequest -Uri $ubuntu_url + $file_Name -OutFile .\$file_Name
 }
 
 foreach ($ubuntu_version in $ubuntu_versions) 
 {
-    $ubuntu_archive = "http://releases.ubuntu.com/$ubuntu_version/MD5SUMS"
-    $md5_file_name = $ubuntu_version + ".MD5SUMS"
+    $ubuntu_archive = $ubuntu_url + "MD5SUMS"
+    $md5_file_name = $ubuntu_versions + ".MD5SUMS"
 
     try 
     {
