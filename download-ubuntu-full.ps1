@@ -65,7 +65,7 @@ foreach ($ubuntu_version in $ubuntu_versions)
             if ($file_already_downloaded -eq "True") 
             {
                 Write-Host "$file_Name is already downloaded."
-				Write-Host "Checking for hash."
+				Write-Host -ForegroundColor yellow "Checking for hash."
 				$ErrorActionPreference = "silentlyContinue"
 				$current_file_hash = Get-Content ".\$file_name" -Stream FileHash
 				$ErrorActionPreference = "Continue"
@@ -94,7 +94,7 @@ foreach ($ubuntu_version in $ubuntu_versions)
             }
 			else
 			{
-				Write-Host -ForegroundColor green "Verification successfull. You now have the latest version"
+				Write-Host -ForegroundColor green "Verification successfull. You have the latest version"
 				Write-Host ""
 			}
         }
