@@ -8,16 +8,20 @@ $ubuntu_url = "http://releases.ubuntu.com/$ubuntu_version/"
 
 function generate_hash 
 {
-	Write-Host -ForegroundColor yellow "Generating hash"
+    Write-Host -ForegroundColor yellow "Generating hash"
     $current_file_hash = Get-FileHash .\$file_Name -Algorithm MD5
     $current_file_hash = $current_file_hash.hash
     Add-Content -path .\$file_Name -Value $current_file_hash -Stream FileHash
-	return $current_file_hash
+    return $current_file_hash
 }
 
 function download_iso
 {
+<<<<<<< HEAD
 	# Invoke-WebRequest -Uri $ubuntu_url + $file_Name -OutFile .\$file_Name
+=======
+    Invoke-WebRequest -Uri http://releases.ubuntu.com/$ubuntu_version/$file_Name -OutFile .\$file_Name
+>>>>>>> 219256473d6c20b7c76ceb02abaed0c0dcda40af
 }
 
 foreach ($ubuntu_version in $ubuntu_versions) 
@@ -54,9 +58,9 @@ foreach ($ubuntu_version in $ubuntu_versions)
             if ($file_already_downloaded -eq "True") 
             {
                 Write-Host "$file_Name is already downloaded. Checking for hash."
-				$ErrorActionPreference = "silentlyContinue"
-				$current_file_hash = Get-Content ".\$file_name" -Stream FileHash
-				$ErrorActionPreference = "Continue"
+		$ErrorActionPreference = "silentlyContinue"
+		$current_file_hash = Get-Content ".\$file_name" -Stream FileHash
+		$ErrorActionPreference = "Continue"
                 if ($null -eq $current_file_hash)
                 {
                     Write-Host -ForegroundColor yellow "Hash not found."
