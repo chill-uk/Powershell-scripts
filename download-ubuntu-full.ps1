@@ -57,37 +57,37 @@ foreach ($ubuntu_version in $ubuntu_versions)
 	
         Invoke-WebRequest -uri $ubuntu_archive -OutFile .\$md5_file_name
         $file_downloaded = Test-Path ".\$md5_file_name"
-		if ($file_downloaded -eq "True")
+	if ($file_downloaded -eq "True")
+	{
+		$remote_file_hashes = Get-Content -Path .\$md5_file_name
+
+		foreach ($Data in $remote_file_hashes) 
 		{
-			$remote_file_hashes = Get-Content -Path .\$md5_file_name
+			$Data = $Data -split(' ')
+			$hash = $Data[0]
+			$file_name = $Data[1].Trim("*")
 
-			foreach ($Data in $remote_file_hashes) 
+			$file_downloaded = Test-Path ".\$file_name"
+
+			if ($file_downloaded -eq "True")
 			{
-				$Data = $Data -split(' ')
-				$hash = $Data[0]
-				$file_name = $Data[1].Trim("*")
-
-				$file_downloaded = Test-Path ".\$file_name"
-
-				if ($file_downloaded -eq "True")
-				{
-					Write-Host "$file_Name is already downloaded."
-					Write-Host -ForegroundColor yellow "Checking for hash."
+				Write-Host "$file_Name is already downloaded."
+				Write-Host -ForegroundColor yellow "Checking for hash."
 			
-					$ErrorActionPreference = "silentlyContinue"
-					$current_file_hash = Get-Content ".\$file_name" -Stream FileHash
-					$ErrorActionPreference = "Continue"
-					if ($null -eq $current_file_hash)
-							{
-									Write-Host -ForegroundColor yellow "Hash not found."
-									$current_file_hash = generate_hash
-							}
-							if ($hash -ne $current_file_hash)
-							{
-									Write-Host -ForegroundColor red "Hash is different, downloading new version"
-									download_iso
-									$current_file_hash = generate_hash
-							}
+				$ErrorActionPreference = "silentlyContinue"
+				$current_file_hash = Get-Content ".\$file_name" -Stream FileHash
+				$ErrorActionPreference = "Continue"
+				if ($null -eq $current_file_hash)
+				{
+					Write-Host -ForegroundColor yellow "Hash not found."
+					$current_file_hash = generate_hash
+				}
+				if ($hash -ne $current_file_hash)
+				{
+					Write-Host -ForegroundColor red "Hash is different, downloading new version"
+					download_iso
+					$current_file_hash = generate_hash
+				}
 				}
 				else
 				{
@@ -111,11 +111,11 @@ foreach ($ubuntu_version in $ubuntu_versions)
 		{
 			Write-Host -ForegroundColor red "Problem saving $md5_file_Name"
 		}
-    }
-    else 
-    { 
-        Write-Host " "
-        Write-Host -ForegroundColor red "URL for Ubuntu $ubuntu_version doesn't exist"
-        Write-Host " "
-    }
+    	}
+    	else 
+    	{ 
+        	Write-Host " "
+		Write-Host -ForegroundColor red "URL for Ubuntu $ubuntu_version doesn't exist"
+		Write-Host " "
+    	}
 }
