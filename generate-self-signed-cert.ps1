@@ -24,7 +24,7 @@ function generate_new_certificate {
 #     if Test-Path = good {
 #         Export-PfxCertificate -cert $Certificate.Thumbprint -FilePath e:\temp\cert.pfx -Password $pwd
 #     }
-# }
+# }k
 
 $Certificate = Get-ChildItem -Path Cert:\localMachine\My -DnsName $computer_name
 
